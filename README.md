@@ -25,7 +25,7 @@ Usage: bilibili [options]
 
 Options:
   -b, --bv <string>         BV id
-  -c, --cookie <number>     SESSDATA
+  -c, --cookie <string>     SESSDATA
   -d, --directory <string>  Output directory (default: "./output")
   -h, --help                output usage information
 ```
