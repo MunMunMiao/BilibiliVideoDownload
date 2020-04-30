@@ -1,0 +1,26 @@
+{
+  "name": "bilibilivideodownload",
+  "version": "1.0.0",
+  "description": "",
+  "main": "bilibili.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MunMunMiao/BilibiliVideoDownload.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MunMunMiao/BilibiliVideoDownload/issues"
+  },
+  "homepage": "https://github.com/MunMunMiao/BilibiliVideoDownload#readme",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "commander": "^4.1.1",
+    "fluent-ffmpeg": "^2.1.2",
+    "progress": "^2.0.3",
+    "rimraf": "^3.0.2"
+  }
+}
