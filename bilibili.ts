@@ -1,5 +1,5 @@
-const { mkdirSync, createWriteStream } = require('fs')
-const { join, resolve } = require('path')
+import { mkdirSync, createWriteStream } from 'fs'
+import { join, resolve } from 'path'
 import axios from 'axios'
 import commander from 'commander'
 import progress from 'progress'

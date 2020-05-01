@@ -3,8 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const { mkdirSync, createWriteStream } = require('fs');
-const { join, resolve } = require('path');
+const fs_1 = require("fs");
+const path_1 = require("path");
 const axios_1 = __importDefault(require("axios"));
 const commander_1 = __importDefault(require("commander"));
 const progress_1 = __importDefault(require("progress"));
@@ -26,13 +26,13 @@ if (commander_1.default.cookie) {
     SESSDATA = commander_1.default.cookie;
 }
 if (commander_1.default.directory) {
-    directory = join(commander_1.default.directory);
+    directory = path_1.join(commander_1.default.directory);
 }
 console.log('Input config:');
 console.table({
     BV: BVID,
     SESSDATA: SESSDATA,
-    Directory: directory ? resolve(directory) : ''
+    Directory: directory ? path_1.resolve(directory) : ''
 });
 async function getCurrentUserData() {
     try {
@@ -214,13 +214,13 @@ async function download(part, url, type) {
     let downloaded = 0;
     const contentType = type || String(response.headers['content-type']);
     const total = Number(response.headers['content-length']);
-    const filePath = join(__dirname, '/tmp', `${part.cid}-${total}`);
+    const filePath = path_1.join(__dirname, '/tmp', `${part.cid}-${total}`);
     // @ts-ignore
     const bar = new progress_1.default(`${contentType} [:bar] :percent :downloaded/:length`, {
         width: 30,
         total: total
     });
-    response.data.pipe(createWriteStream(filePath));
+    response.data.pipe(fs_1.createWriteStream(filePath));
     return new Promise((resolve, reject) => {
         response.data.on('data', (chunk) => {
             downloaded += chunk.length;
@@ -238,14 +238,14 @@ function convert(fileName, part, paths) {
         if (paths.length <= 0) {
             return;
         }
-        mkdirSync(join(directory), { recursive: true });
+        fs_1.mkdirSync(path_1.join(directory), { recursive: true });
         const command = fluent_ffmpeg_1.default();
         for (const item of paths) {
             command.mergeAdd(item);
         }
         command.videoCodec(`copy`);
         command.audioCodec(`copy`);
-        command.output(join(directory, `${fileName}_${BVID}_${part.cid}.mkv`));
+        command.output(path_1.join(directory, `${fileName}_${BVID}_${part.cid}.mkv`));
         command.on('error', err => {
             for (const item of paths) {
                 rimraf_1.default.sync(item);
@@ -274,7 +274,7 @@ async function main() {
     if (!BVID) {
         return;
     }
-    mkdirSync(join(__dirname, '/tmp'), { recursive: true });
+    fs_1.mkdirSync(path_1.join(__dirname, '/tmp'), { recursive: true });
     await getCurrentUserData();
     videoData = await getVideoData();
     for (const item of videoData.pages) {
@@ -295,7 +295,7 @@ async function main() {
         }
         await convert(videoData.title, item, paths);
     }
-    rimraf_1.default.sync(join(__dirname, '/tmp'));
+    rimraf_1.default.sync(path_1.join(__dirname, '/tmp'));
     console.log(`Task complete`);
 }
 main();
