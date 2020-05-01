@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -43,65 +34,61 @@ console.table({
     SESSDATA: SESSDATA,
     Directory: directory ? resolve(directory) : ''
 });
-function getCurrentUserData() {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const result = yield axios_1.default.get('https://api.bilibili.com/nav', {
-                headers: {
-                    Cookie: `SESSDATA=${SESSDATA || ''}`,
-                    'User-Agent': userAgent
-                }
+async function getCurrentUserData() {
+    try {
+        const result = await axios_1.default.get('https://api.bilibili.com/nav', {
+            headers: {
+                Cookie: `SESSDATA=${SESSDATA || ''}`,
+                'User-Agent': userAgent
+            }
+        });
+        if (result.data.code === 0) {
+            console.log('Current user:');
+            console.table({
+                id: result.data.data.mid,
+                name: result.data.data.uname,
+                isVip: result.data.data.vipStatus === 1
             });
-            if (result.data.code === 0) {
-                console.log('Current user:');
-                console.table({
-                    id: result.data.data.mid,
-                    name: result.data.data.uname,
-                    isVip: result.data.data.vipStatus === 1
-                });
-            }
-            else {
-                throw `Error getting user information`;
-            }
         }
-        catch (err) {
-            throw new Error(err);
+        else {
+            throw `Error getting user information`;
         }
-    });
+    }
+    catch (err) {
+        throw new Error(err);
+    }
 }
-function getVideoData() {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const result = yield axios_1.default.get('https://api.bilibili.com/x/web-interface/view', {
-                params: {
-                    bvid: BVID
-                },
-                headers: {
-                    Cookie: `SESSDATA=${SESSDATA || ''}`,
-                    'User-Agent': userAgent
-                }
-            });
-            if (result.data.code === 0) {
-                let info = {
-                    BV: result.data.data.bvid,
-                    AV: `AV${result.data.data.aid}`,
-                    Title: result.data.data.title,
-                };
-                for (const [index, item] of result.data.data.pages.entries()) {
-                    info[`Part-${index + 1}`] = item.part;
-                }
-                console.log('Video data:');
-                console.table(info);
-                return result.data.data;
+async function getVideoData() {
+    try {
+        const result = await axios_1.default.get('https://api.bilibili.com/x/web-interface/view', {
+            params: {
+                bvid: BVID
+            },
+            headers: {
+                Cookie: `SESSDATA=${SESSDATA || ''}`,
+                'User-Agent': userAgent
             }
-            else {
-                throw `Error getting video data`;
+        });
+        if (result.data.code === 0) {
+            let info = {
+                BV: result.data.data.bvid,
+                AV: `AV${result.data.data.aid}`,
+                Title: result.data.data.title,
+            };
+            for (const [index, item] of result.data.data.pages.entries()) {
+                info[`Part-${index + 1}`] = item.part;
             }
+            console.log('Video data:');
+            console.table(info);
+            return result.data.data;
         }
-        catch (err) {
-            throw new Error(err);
+        else {
+            throw `Error getting video data`;
         }
-    });
+    }
+    catch (err) {
+        throw new Error(err);
+    }
 }
 class BaseStream {
     constructor(from, result, message, quality, format, timelength, accept_format, accept_description, accept_quality, video_codecid, seek_param, seek_type) {
@@ -159,97 +146,91 @@ class FlvStream {
         this.durl = durl;
     }
 }
-function getAcceptQuality(cid) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const result = yield axios_1.default.get('https://api.bilibili.com/x/player/playurl', {
-                params: {
-                    bvid: BVID,
-                    cid,
-                    fourk: 1
-                },
-                headers: {
-                    Cookie: `SESSDATA=${SESSDATA || ''}`,
-                    'User-Agent': userAgent
-                }
-            });
-            if (result.data.code === 0) {
-                return result.data.data.accept_quality.sort((a, b) => b - a);
-            }
-            else {
-                throw `Failed to obtain video information`;
-            }
-        }
-        catch (err) {
-            throw new Error(err);
-        }
-    });
-}
-function getVideoUrl(cid, qualityId) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const result = yield axios_1.default.get('https://api.bilibili.com/x/player/playurl', {
-                params: {
-                    bvid: BVID,
-                    cid,
-                    fnval: 16,
-                    qn: qualityId,
-                    fourk: 1
-                },
-                headers: {
-                    Cookie: `SESSDATA=${SESSDATA || ''}`,
-                    'User-Agent': userAgent
-                }
-            });
-            if (result.data.code === 0) {
-                const _data = result.data.data;
-                const acceptFormat = _data.accept_format.split(',');
-                if (acceptFormat.includes('mp4') || acceptFormat.includes('hdflv2') && Object.keys(_data).includes('dash')) {
-                    return new DashStream(_data.from, _data.result, _data.message, _data.quality, _data.format, _data.timelength, _data.accept_format, _data.accept_description, _data.accept_quality, _data.video_codecid, _data.seek_param, _data.seek_type, _data.dash);
-                }
-                else {
-                    return new FlvStream(_data.from, _data.result, _data.message, _data.quality, _data.format, _data.timelength, _data.accept_format, _data.accept_description, _data.accept_quality, _data.video_codecid, _data.seek_param, _data.seek_type, _data.durl);
-                }
-            }
-            else {
-                throw `Error getting video download link`;
-            }
-        }
-        catch (err) {
-            throw new Error(err);
-        }
-    });
-}
-function download(part, url, type) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const response = yield axios_1.default.get(url, {
-            responseType: 'stream',
+async function getAcceptQuality(cid) {
+    try {
+        const result = await axios_1.default.get('https://api.bilibili.com/x/player/playurl', {
+            params: {
+                bvid: BVID,
+                cid,
+                fourk: 1
+            },
             headers: {
-                'User-Agent': userAgent,
-                'Referer': `https://www.bilibili.com/video/BV1Qz411b7jr`
+                Cookie: `SESSDATA=${SESSDATA || ''}`,
+                'User-Agent': userAgent
             }
         });
-        let downloaded = 0;
-        const contentType = type || String(response.headers['content-type']);
-        const total = Number(response.headers['content-length']);
-        const filePath = join(__dirname, '/tmp', `${part.cid}-${total}`);
-        // @ts-ignore
-        const bar = new progress_1.default(`${contentType} [:bar] :percent :downloaded/:length`, {
-            width: 30,
-            total: total
+        if (result.data.code === 0) {
+            return result.data.data.accept_quality.sort((a, b) => b - a);
+        }
+        else {
+            throw `Failed to obtain video information`;
+        }
+    }
+    catch (err) {
+        throw new Error(err);
+    }
+}
+async function getVideoUrl(cid, qualityId) {
+    try {
+        const result = await axios_1.default.get('https://api.bilibili.com/x/player/playurl', {
+            params: {
+                bvid: BVID,
+                cid,
+                fnval: 16,
+                qn: qualityId,
+                fourk: 1
+            },
+            headers: {
+                Cookie: `SESSDATA=${SESSDATA || ''}`,
+                'User-Agent': userAgent
+            }
         });
-        response.data.pipe(createWriteStream(filePath));
-        return new Promise((resolve, reject) => {
-            response.data.on('data', (chunk) => {
-                downloaded += chunk.length;
-                bar.tick(chunk.length, {
-                    downloaded: transform(downloaded),
-                    length: transform(total)
-                });
+        if (result.data.code === 0) {
+            const _data = result.data.data;
+            const acceptFormat = _data.accept_format.split(',');
+            if (acceptFormat.includes('mp4') || acceptFormat.includes('hdflv2') && Object.keys(_data).includes('dash')) {
+                return new DashStream(_data.from, _data.result, _data.message, _data.quality, _data.format, _data.timelength, _data.accept_format, _data.accept_description, _data.accept_quality, _data.video_codecid, _data.seek_param, _data.seek_type, _data.dash);
+            }
+            else {
+                return new FlvStream(_data.from, _data.result, _data.message, _data.quality, _data.format, _data.timelength, _data.accept_format, _data.accept_description, _data.accept_quality, _data.video_codecid, _data.seek_param, _data.seek_type, _data.durl);
+            }
+        }
+        else {
+            throw `Error getting video download link`;
+        }
+    }
+    catch (err) {
+        throw new Error(err);
+    }
+}
+async function download(part, url, type) {
+    const response = await axios_1.default.get(url, {
+        responseType: 'stream',
+        headers: {
+            'User-Agent': userAgent,
+            'Referer': `https://www.bilibili.com/video/BV1Qz411b7jr`
+        }
+    });
+    let downloaded = 0;
+    const contentType = type || String(response.headers['content-type']);
+    const total = Number(response.headers['content-length']);
+    const filePath = join(__dirname, '/tmp', `${part.cid}-${total}`);
+    // @ts-ignore
+    const bar = new progress_1.default(`${contentType} [:bar] :percent :downloaded/:length`, {
+        width: 30,
+        total: total
+    });
+    response.data.pipe(createWriteStream(filePath));
+    return new Promise((resolve, reject) => {
+        response.data.on('data', (chunk) => {
+            downloaded += chunk.length;
+            bar.tick(chunk.length, {
+                downloaded: transform(downloaded),
+                length: transform(total)
             });
-            response.data.on('end', () => resolve(filePath));
-            response.data.on('error', (err) => reject(err));
         });
+        response.data.on('end', () => resolve(filePath));
+        response.data.on('error', (err) => reject(err));
     });
 }
 function convert(fileName, part, paths) {
@@ -289,35 +270,33 @@ function transform(value) {
     const e = Math.floor(Math.log(value) / Math.log(1024));
     return `${(value / Math.pow(1024, Math.floor(e))).toFixed(2)}${s[e]}`;
 }
-function main() {
-    return __awaiter(this, void 0, void 0, function* () {
-        if (!BVID) {
-            return;
+async function main() {
+    if (!BVID) {
+        return;
+    }
+    mkdirSync(join(__dirname, '/tmp'), { recursive: true });
+    await getCurrentUserData();
+    videoData = await getVideoData();
+    for (const item of videoData.pages) {
+        const qualityArray = await getAcceptQuality(item.cid);
+        const stream = await getVideoUrl(item.cid, qualityArray[0]);
+        const paths = [];
+        console.log(`Part: ${item.page}`);
+        console.log(`Name: ${item.part}`);
+        if (stream instanceof DashStream) {
+            const videoPath = await download(item, stream.dash.video[0].baseUrl, stream.dash.video[0].mimeType);
+            const audioPath = await download(item, stream.dash.audio[0].baseUrl, stream.dash.audio[0].mimeType);
+            paths.push(videoPath);
+            paths.push(audioPath);
         }
-        mkdirSync(join(__dirname, '/tmp'), { recursive: true });
-        yield getCurrentUserData();
-        videoData = yield getVideoData();
-        for (const item of videoData.pages) {
-            const qualityArray = yield getAcceptQuality(item.cid);
-            const stream = yield getVideoUrl(item.cid, qualityArray[0]);
-            const paths = [];
-            console.log(`Part: ${item.page}`);
-            console.log(`Name: ${item.part}`);
-            if (stream instanceof DashStream) {
-                const videoPath = yield download(item, stream.dash.video[0].baseUrl, stream.dash.video[0].mimeType);
-                const audioPath = yield download(item, stream.dash.audio[0].baseUrl, stream.dash.audio[0].mimeType);
-                paths.push(videoPath);
-                paths.push(audioPath);
-            }
-            if (stream instanceof FlvStream) {
-                const filePath = yield download(item, stream.durl[0].url);
-                paths.push(filePath);
-            }
-            yield convert(videoData.title, item, paths);
+        if (stream instanceof FlvStream) {
+            const filePath = await download(item, stream.durl[0].url);
+            paths.push(filePath);
         }
-        rimraf_1.default.sync(join(__dirname, '/tmp'));
-        console.log(`Task complete`);
-    });
+        await convert(videoData.title, item, paths);
+    }
+    rimraf_1.default.sync(join(__dirname, '/tmp'));
+    console.log(`Task complete`);
 }
 main();
 //# sourceMappingURL=bilibili.js.map
