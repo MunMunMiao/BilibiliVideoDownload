@@ -2,6 +2,13 @@
 
 > This library relies on [ffmpeg](https://www.ffmpeg.org/download.html), please install and set path
 
+- [How to use](#How to use)
+	- [Download](#Download)
+	- [Install dependencies](#Install dependencies)
+	- [Quick start](#Quick start)
+- [Options](#Options)
+- [Working at next](#Working at next)
+
 ## How to use
 
 #### Download
@@ -29,3 +36,9 @@ Options:
   -d, --directory <string>  Output directory (default: "./output")
   -h, --help                output usage information
 ```
+## Working at next
+
+- Download all videos owned by the user according to the user id
+- Add subscription monitoring mode to download users' videos regularly
+- Add PM2 support
+- Support external configuration file
