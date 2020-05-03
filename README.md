@@ -2,12 +2,12 @@
 
 > This library relies on [ffmpeg](https://www.ffmpeg.org/download.html), please install and set path
 
-- [How to use](#How to use)
+- [How to use](#How-to-use)
 	- [Download](#Download)
-	- [Install dependencies](#Install dependencies)
-	- [Quick start](#Quick start)
+	- [Install dependencies](#Install-dependencies)
+	- [Quick start](#Quick-start)
 - [Options](#Options)
-- [Working at next](#Working at next)
+- [Working at next](#Working-at-next)
 
 ## How to use
 
