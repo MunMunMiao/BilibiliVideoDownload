@@ -357,7 +357,7 @@ async function getVideoUrl(cid: number, qualityId: number): Promise<DashStream |
         if (result.data.code === 0){
             const _data = result.data.data
             const acceptFormat: string[] = _data.accept_format.split(',')
-            if (acceptFormat.includes('mp4') || acceptFormat.includes('hdflv2') && Object.keys(_data).includes('dash')){
+            if ((acceptFormat.includes('mp4') || acceptFormat.includes('hdflv2')) && Object.keys(_data).includes('dash')){
                 return new DashStream(
                     _data.from,
                     _data.result,
@@ -403,7 +403,7 @@ async function download(part: PartItem, url: string, type?: string): Promise<str
         responseType: 'stream',
         headers: {
             'User-Agent': userAgent,
-            'Referer': `https://www.bilibili.com/video/BV1Qz411b7jr`
+            'Referer': `https://www.bilibili.com/video/${ BVID }`
         }
     })
     let downloaded: number = 0

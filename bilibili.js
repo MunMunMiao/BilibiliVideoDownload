@@ -188,7 +188,7 @@ async function getVideoUrl(cid, qualityId) {
         if (result.data.code === 0) {
             const _data = result.data.data;
             const acceptFormat = _data.accept_format.split(',');
-            if (acceptFormat.includes('mp4') || acceptFormat.includes('hdflv2') && Object.keys(_data).includes('dash')) {
+            if ((acceptFormat.includes('mp4') || acceptFormat.includes('hdflv2')) && Object.keys(_data).includes('dash')) {
                 return new DashStream(_data.from, _data.result, _data.message, _data.quality, _data.format, _data.timelength, _data.accept_format, _data.accept_description, _data.accept_quality, _data.video_codecid, _data.seek_param, _data.seek_type, _data.dash);
             }
             else {
@@ -208,7 +208,7 @@ async function download(part, url, type) {
         responseType: 'stream',
         headers: {
             'User-Agent': userAgent,
-            'Referer': `https://www.bilibili.com/video/BV1Qz411b7jr`
+            'Referer': `https://www.bilibili.com/video/${BVID}`
         }
     });
     let downloaded = 0;
