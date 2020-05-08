@@ -215,7 +215,6 @@ async function download(part, url, type) {
     const contentType = type || String(response.headers['content-type']);
     const total = Number(response.headers['content-length']);
     const filePath = path_1.join(__dirname, '/tmp', `${part.cid}-${total}`);
-    // @ts-ignore
     const bar = new progress_1.default(`${contentType} [:bar] :percent :downloaded/:length`, {
         width: 30,
         total: total
@@ -246,6 +245,9 @@ function convert(fileName, part, paths) {
         command.videoCodec(`copy`);
         command.audioCodec(`copy`);
         command.output(path_1.join(directory, `${fileName}_${BVID}_${part.cid}.mkv`));
+        command.on('start', () => {
+            console.log(`Convert start`);
+        });
         command.on('error', err => {
             for (const item of paths) {
                 rimraf_1.default.sync(item);
@@ -284,8 +286,8 @@ async function main() {
         console.log(`Part: ${item.page}`);
         console.log(`Name: ${item.part}`);
         if (stream instanceof DashStream) {
-            const videoPath = await download(item, stream.dash.video[0].baseUrl, stream.dash.video[0].mimeType);
-            const audioPath = await download(item, stream.dash.audio[0].baseUrl, stream.dash.audio[0].mimeType);
+            const videoPath = await download(item, stream.stream.video.baseUrl, stream.dash.video[0].mimeType);
+            const audioPath = await download(item, stream.stream.audio.baseUrl, stream.dash.audio[0].mimeType);
             paths.push(videoPath);
             paths.push(audioPath);
         }

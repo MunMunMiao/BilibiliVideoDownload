@@ -5,7 +5,6 @@
   "main": "bilibili.js",
   "scripts": {
     "dev": "tsc",
-
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
