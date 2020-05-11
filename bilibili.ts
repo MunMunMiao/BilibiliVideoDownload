@@ -444,7 +444,7 @@ function convert(fileName: string, part: PartItem, paths: string[]){
 
         command.videoCodec(`copy`)
         command.audioCodec(`copy`)
-        command.output(join(directory, `${ fileName }_${ BVID }_${ part.cid }.mkv`))
+        command.output(join(directory, `${ fileName }_${ BVID }_${ part.part }.mkv`))
 
         command.on('start', () => {
             console.log(`Convert start`)

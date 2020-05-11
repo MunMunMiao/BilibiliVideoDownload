@@ -244,7 +244,7 @@ function convert(fileName, part, paths) {
         }
         command.videoCodec(`copy`);
         command.audioCodec(`copy`);
-        command.output(path_1.join(directory, `${fileName}_${BVID}_${part.cid}.mkv`));
+        command.output(path_1.join(directory, `${fileName}_${BVID}_${part.part}.mkv`));
         command.on('start', () => {
             console.log(`Convert start`);
         });
