@@ -356,8 +356,9 @@ async function getVideoUrl(cid: number, qualityId: number): Promise<DashStream |
 
         if (result.data.code === 0){
             const _data = result.data.data
+            console.log(_data)
             const acceptFormat: string[] = _data.accept_format.split(',')
-            if ((acceptFormat.includes('mp4') || acceptFormat.includes('hdflv2')) && Object.keys(_data).includes('dash')){
+            if ((acceptFormat.includes('mp4') || acceptFormat.includes('hdflv2')) || Object.keys(_data).includes('dash')){
                 return new DashStream(
                     _data.from,
                     _data.result,
