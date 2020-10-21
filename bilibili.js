@@ -272,6 +272,15 @@ function transform(value) {
     const e = Math.floor(Math.log(value) / Math.log(1024));
     return `${(value / Math.pow(1024, Math.floor(e))).toFixed(2)}${s[e]}`;
 }
+function normalizeName(str) {
+    str = str.replace(/(\?|\*)/g, '');
+    str = str.replace(/(\/|\|)/g, ' ');
+    str = str.replace(/:/g, '-');
+    str = str.replace(/"/g, '\`');
+    str = str.replace(/</g, '(');
+    str = str.replace(/>/g, ')');
+    return str;
+}
 async function main() {
     if (!BVID) {
         return;
@@ -295,7 +304,7 @@ async function main() {
             const filePath = await download(item, stream.durl[0].url);
             paths.push(filePath);
         }
-        await convert(videoData.title, item, paths);
+        await convert(normalizeName(videoData.title), item, paths);
     }
     rimraf_1.default.sync(path_1.join(__dirname, '/tmp'));
     console.log(`Task complete`);
