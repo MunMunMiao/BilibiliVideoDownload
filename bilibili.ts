@@ -477,6 +477,16 @@ function transform(value?: number): string{
     return `${ (value / Math.pow(1024, Math.floor(e))).toFixed(2) }${ s[e] }`
 }
 
+function normalizeName(str: string): string{
+    str = str.replace(/(\?|\*)/g, '')
+    str = str.replace(/(\/|\|)/g, ' ')
+    str = str.replace(/:/g, '-')
+    str = str.replace(/"/g, '\`')
+    str = str.replace(/</g, '(')
+    str = str.replace(/>/g, ')')
+    return str
+}
+
 async function main(): Promise<void>{
     if (!BVID){
         return
@@ -506,7 +516,7 @@ async function main(): Promise<void>{
             paths.push(filePath)
         }
 
-        await convert(videoData.title, item, paths)
+        await convert(normalizeName(videoData.title), item, paths)
     }
 
     rimraf.sync(join(__dirname, '/tmp'))
