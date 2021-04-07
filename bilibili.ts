@@ -22,7 +22,7 @@ if (commander.bv){
     BVID = commander.bv
 }
 if (commander.cookie){
-    SESSDATA = commander.cookie
+    SESSDATA = decodeURI(commander.cookie)
 }
 if (commander.directory){
     directory = join(commander.directory)
@@ -430,7 +430,7 @@ async function download(part: PartItem, url: string, type?: string): Promise<str
 }
 
 function convert(fileName: string, part: PartItem, paths: string[]){
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
         if (paths.length <= 0){
             return
         }

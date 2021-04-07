@@ -23,7 +23,7 @@ if (commander_1.default.bv) {
     BVID = commander_1.default.bv;
 }
 if (commander_1.default.cookie) {
-    SESSDATA = commander_1.default.cookie;
+    SESSDATA = decodeURI(commander_1.default.cookie);
 }
 if (commander_1.default.directory) {
     directory = path_1.join(commander_1.default.directory);
@@ -74,6 +74,7 @@ async function getVideoData() {
                 BV: result.data.data.bvid,
                 AV: `AV${result.data.data.aid}`,
                 Title: result.data.data.title,
+                // desc: result.data.data.desc
             };
             for (const [index, item] of result.data.data.pages.entries()) {
                 info[`Part-${index + 1}`] = item.part;
