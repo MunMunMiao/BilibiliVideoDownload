@@ -36,9 +36,3 @@ Options:
   -d, --directory <string>  Output directory (default: "./output")
   -h, --help                output usage information
 ```
-## Working at next
-
-- Download all videos owned by the user according to the user id
-- Add subscription monitoring mode to download users' videos regularly
-- Add PM2 support
-- Support external configuration file
