@@ -18,16 +18,17 @@
   },
   "homepage": "https://github.com/MunMunMiao/BilibiliVideoDownload#readme",
   "dependencies": {
-    "axios": "^0.19.2",
-    "commander": "^4.1.1",
+    "axios": "^0.24.0",
+    "commander": "^8.3.0",
     "fluent-ffmpeg": "^2.1.2",
     "progress": "^2.0.3",
     "rimraf": "^3.0.2"
   },
   "devDependencies": {
-    "@types/fluent-ffmpeg": "^2.1.14",
-    "@types/node": "^13.13.4",
-    "@types/progress": "^2.0.3",
-    "@types/rimraf": "^3.0.0"
+    "@types/fluent-ffmpeg": "^2.1.18",
+    "@types/node": "^16.11.6",
+    "@types/progress": "^2.0.5",
+    "@types/rimraf": "^3.0.2",
+    "typescript": "^4.4.4"
   }
 }

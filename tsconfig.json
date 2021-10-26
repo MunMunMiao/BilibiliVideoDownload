@@ -14,7 +14,8 @@
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,
         "sourceRoot": "./",
-        "forceConsistentCasingInFileNames": true
+        "forceConsistentCasingInFileNames": true,
+        "skipLibCheck": true
     },
     "files": [
         "bilibili.ts"

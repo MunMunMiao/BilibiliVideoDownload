@@ -1,31 +1,37 @@
 import { mkdirSync, createWriteStream } from 'fs'
 import { join, resolve } from 'path'
 import axios from 'axios'
-import commander from 'commander'
+import { program } from 'commander'
 import progress from 'progress'
 import ffmpeg from 'fluent-ffmpeg'
 import rimraf from 'rimraf'
 
-commander.requiredOption('-b, --bv <string>', 'BV id')
-commander.requiredOption('-c, --cookie <number>', 'SESSDATA')
-commander.requiredOption('-d, --directory <string>', 'Output directory', './output')
+program.requiredOption('-b, --bv <string>', 'BV id')
+program.requiredOption('-c, --cookie <number>', 'SESSDATA')
+program.requiredOption('-d, --directory <string>', 'Output directory', './output')
 
-commander.parse(process.argv)
+program.parse(process.argv)
 
-let BVID: string | null = null
-let SESSDATA: string | null = null
 const userAgent: string = `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36`
 let directory: string = './output'
-let videoData: VideoData | null = null
+let BVID: string | undefined
+let SESSDATA: string | undefined
+let videoData: VideoData | undefined
 
-if (commander.bv){
-    BVID = commander.bv
+const values = program.opts<{
+    bv?: string
+    cookie?: string
+    directory?: string
+}>()
+
+if (values.bv){
+    BVID = values.bv
 }
-if (commander.cookie){
-    SESSDATA = commander.cookie
+if (values.cookie){
+    SESSDATA = decodeURI(values.cookie)
 }
-if (commander.directory){
-    directory = join(commander.directory)
+if (values.directory){
+    directory = join(values.directory)
 }
 
 console.log('Input config:')
@@ -93,26 +99,22 @@ interface UserData {
 }
 
 async function getCurrentUserData(): Promise<void>{
-    try {
-        const result = await axios.get<BaseResponse<UserData>>('https://api.bilibili.com/nav', {
-            headers: {
-                Cookie: `SESSDATA=${ SESSDATA || '' }`,
-                'User-Agent': userAgent
-            }
-        })
-
-        if (result.data.code === 0){
-            console.log('Current user:')
-            console.table({
-                id: result.data.data.mid,
-                name: result.data.data.uname,
-                isVip: result.data.data.vipStatus === 1
-            })
-        }else {
-            throw `Error getting user information`
+    const result = await axios.get<BaseResponse<UserData>>('https://api.bilibili.com/nav', {
+        headers: {
+            Cookie: `SESSDATA=${ SESSDATA || '' }`,
+            'User-Agent': userAgent
         }
-    }catch (err) {
-        throw new Error(err)
+    })
+
+    if (result.data.code === 0){
+        console.log('Current user:')
+        console.table({
+            id: result.data.data.mid,
+            name: result.data.data.uname,
+            isVip: result.data.data.vipStatus === 1
+        })
+    }else {
+        throw new Error(`Error getting user information`)
     }
 }
 
@@ -150,37 +152,33 @@ interface VideoData {
 }
 
 async function getVideoData(): Promise<VideoData>{
-    try {
-        const result = await axios.get<BaseResponse<VideoData>>('https://api.bilibili.com/x/web-interface/view', {
-            params: {
-                bvid: BVID
-            },
-            headers: {
-                Cookie: `SESSDATA=${ SESSDATA || '' }`,
-                'User-Agent': userAgent
-            }
-        })
-
-        if (result.data.code === 0){
-            let info: {[key: string]: string} = {
-                BV: result.data.data.bvid,
-                AV: `AV${ result.data.data.aid }`,
-                Title: result.data.data.title,
-                // desc: result.data.data.desc
-            }
-
-            for (const [index, item] of result.data.data.pages.entries()){
-                info[`Part-${ index + 1 }`] = item.part
-            }
-
-            console.log('Video data:')
-            console.table(info)
-            return result.data.data
-        }else {
-            throw `Error getting video data`
+    const result = await axios.get<BaseResponse<VideoData>>('https://api.bilibili.com/x/web-interface/view', {
+        params: {
+            bvid: BVID
+        },
+        headers: {
+            Cookie: `SESSDATA=${ SESSDATA || '' }`,
+            'User-Agent': userAgent
         }
-    }catch (err) {
-        throw new Error(err)
+    })
+
+    if (result.data.code === 0){
+        let info: {[key: string]: string} = {
+            BV: result.data.data.bvid,
+            AV: `AV${ result.data.data.aid }`,
+            Title: result.data.data.title,
+            // desc: result.data.data.desc
+        }
+
+        for (const [index, item] of result.data.data.pages.entries()){
+            info[`Part-${ index + 1 }`] = item.part
+        }
+
+        console.log('Video data:')
+        console.table(info)
+        return result.data.data
+    }else {
+        throw new Error(`Error getting video data`)
     }
 }
 
@@ -274,8 +272,8 @@ class BaseStream{
 class DashStream{
     get stream() {
         return {
-            video: this.dash.video.sort((a, b) => b.bandwidth - a.bandwidth)[0],
-            audio: this.dash.audio.sort((a, b) => b.bandwidth - a.bandwidth)[0]
+            video: this.dash.video.sort((a, b) => b.id - a.id)[0],
+            audio: this.dash.audio.sort((a, b) => b.id - a.id)[0]
         }
     }
 
@@ -315,86 +313,79 @@ class FlvStream{
 }
 
 async function getAcceptQuality(cid: number): Promise<number[]>{
-    try {
-        const result = await axios.get<BaseResponse<BaseStream>>('https://api.bilibili.com/x/player/playurl', {
-            params: {
-                bvid: BVID,
-                cid,
-                fourk: 1
-            },
-            headers: {
-                Cookie: `SESSDATA=${ SESSDATA || '' }`,
-                'User-Agent': userAgent
-            }
-        })
-
-        if (result.data.code === 0){
-            return result.data.data.accept_quality.sort((a, b) => b - a)
-        }else {
-            throw `Failed to obtain video information`
+    const result = await axios.get<BaseResponse<BaseStream>>('https://api.bilibili.com/x/player/playurl', {
+        params: {
+            bvid: BVID,
+            cid,
+            fourk: 1,
+            fnval: 80
+        },
+        headers: {
+            Cookie: `SESSDATA=${ SESSDATA || '' }`,
+            'User-Agent': userAgent
         }
-    }catch (err) {
-        throw new Error(err)
+    })
+
+    if (result.data.code === 0){
+        return result.data.data.accept_quality.sort((a, b) => b - a)
+    }else {
+        throw new Error(`Failed to obtain video information`)
     }
 }
 
 async function getVideoUrl(cid: number, qualityId: number): Promise<DashStream | FlvStream>{
-    try {
-        const result = await axios.get<BaseResponse>('https://api.bilibili.com/x/player/playurl', {
-            params: {
-                bvid: BVID,
-                cid,
-                fnval: 16,
-                qn: qualityId,
-                fourk: 1
-            },
-            headers: {
-                Cookie: `SESSDATA=${ SESSDATA || '' }`,
-                'User-Agent': userAgent
-            }
-        })
-
-        if (result.data.code === 0){
-            const _data = result.data.data
-            const acceptFormat: string[] = _data.accept_format.split(',')
-            if ((acceptFormat.includes('mp4') || acceptFormat.includes('hdflv2')) || Object.keys(_data).includes('dash')){
-                return new DashStream(
-                    _data.from,
-                    _data.result,
-                    _data.message,
-                    _data.quality,
-                    _data.format,
-                    _data.timelength,
-                    _data.accept_format,
-                    _data.accept_description,
-                    _data.accept_quality,
-                    _data.video_codecid,
-                    _data.seek_param,
-                    _data.seek_type,
-                    _data.dash
-                )
-            }else {
-                return new FlvStream(
-                    _data.from,
-                    _data.result,
-                    _data.message,
-                    _data.quality,
-                    _data.format,
-                    _data.timelength,
-                    _data.accept_format,
-                    _data.accept_description,
-                    _data.accept_quality,
-                    _data.video_codecid,
-                    _data.seek_param,
-                    _data.seek_type,
-                    _data.durl
-                )
-            }
-        }else {
-            throw `Error getting video download link`
+    const result = await axios.get<BaseResponse>('https://api.bilibili.com/x/player/playurl', {
+        params: {
+            bvid: BVID,
+            cid,
+            fnval: 80,
+            qn: qualityId,
+            fourk: 1
+        },
+        headers: {
+            Cookie: `SESSDATA=${ SESSDATA || '' }`,
+            'User-Agent': userAgent
         }
-    }catch (err) {
-        throw new Error(err)
+    })
+
+    if (result.data.code === 0){
+        const _data = result.data.data
+        const acceptFormat: string[] = _data.accept_format.split(',')
+        if ((acceptFormat.includes('mp4') || acceptFormat.includes('hdflv2')) || Object.keys(_data).includes('dash')){
+            return new DashStream(
+                _data.from,
+                _data.result,
+                _data.message,
+                _data.quality,
+                _data.format,
+                _data.timelength,
+                _data.accept_format,
+                _data.accept_description,
+                _data.accept_quality,
+                _data.video_codecid,
+                _data.seek_param,
+                _data.seek_type,
+                _data.dash
+            )
+        }else {
+            return new FlvStream(
+                _data.from,
+                _data.result,
+                _data.message,
+                _data.quality,
+                _data.format,
+                _data.timelength,
+                _data.accept_format,
+                _data.accept_description,
+                _data.accept_quality,
+                _data.video_codecid,
+                _data.seek_param,
+                _data.seek_type,
+                _data.durl
+            )
+        }
+    }else {
+        throw new Error(`Error getting video download link`)
     }
 }
 
@@ -429,7 +420,7 @@ async function download(part: PartItem, url: string, type?: string): Promise<str
     })
 }
 
-function convert(fileName: string, part: PartItem, paths: string[]){
+function convert(fileName: string, part: PartItem, paths: string[]): Promise<void>{
     return new Promise((resolve, reject) => {
         if (paths.length <= 0){
             return

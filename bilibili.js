@@ -6,88 +6,80 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = require("fs");
 const path_1 = require("path");
 const axios_1 = __importDefault(require("axios"));
-const commander_1 = __importDefault(require("commander"));
+const commander_1 = require("commander");
 const progress_1 = __importDefault(require("progress"));
 const fluent_ffmpeg_1 = __importDefault(require("fluent-ffmpeg"));
 const rimraf_1 = __importDefault(require("rimraf"));
-commander_1.default.requiredOption('-b, --bv <string>', 'BV id');
-commander_1.default.requiredOption('-c, --cookie <number>', 'SESSDATA');
-commander_1.default.requiredOption('-d, --directory <string>', 'Output directory', './output');
-commander_1.default.parse(process.argv);
-let BVID = null;
-let SESSDATA = null;
+commander_1.program.requiredOption('-b, --bv <string>', 'BV id');
+commander_1.program.requiredOption('-c, --cookie <number>', 'SESSDATA');
+commander_1.program.requiredOption('-d, --directory <string>', 'Output directory', './output');
+commander_1.program.parse(process.argv);
 const userAgent = `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36`;
 let directory = './output';
-let videoData = null;
-if (commander_1.default.bv) {
-    BVID = commander_1.default.bv;
+let BVID;
+let SESSDATA;
+let videoData;
+const values = commander_1.program.opts();
+if (values.bv) {
+    BVID = values.bv;
 }
-if (commander_1.default.cookie) {
-    SESSDATA = commander_1.default.cookie;
+if (values.cookie) {
+    SESSDATA = decodeURI(values.cookie);
 }
-if (commander_1.default.directory) {
-    directory = path_1.join(commander_1.default.directory);
+if (values.directory) {
+    directory = (0, path_1.join)(values.directory);
 }
 console.log('Input config:');
 console.table({
     BV: BVID,
     SESSDATA: SESSDATA,
-    Directory: directory ? path_1.resolve(directory) : ''
+    Directory: directory ? (0, path_1.resolve)(directory) : ''
 });
 async function getCurrentUserData() {
-    try {
-        const result = await axios_1.default.get('https://api.bilibili.com/nav', {
-            headers: {
-                Cookie: `SESSDATA=${SESSDATA || ''}`,
-                'User-Agent': userAgent
-            }
+    const result = await axios_1.default.get('https://api.bilibili.com/nav', {
+        headers: {
+            Cookie: `SESSDATA=${SESSDATA || ''}`,
+            'User-Agent': userAgent
+        }
+    });
+    if (result.data.code === 0) {
+        console.log('Current user:');
+        console.table({
+            id: result.data.data.mid,
+            name: result.data.data.uname,
+            isVip: result.data.data.vipStatus === 1
         });
-        if (result.data.code === 0) {
-            console.log('Current user:');
-            console.table({
-                id: result.data.data.mid,
-                name: result.data.data.uname,
-                isVip: result.data.data.vipStatus === 1
-            });
-        }
-        else {
-            throw `Error getting user information`;
-        }
     }
-    catch (err) {
-        throw new Error(err);
+    else {
+        throw new Error(`Error getting user information`);
     }
 }
 async function getVideoData() {
-    try {
-        const result = await axios_1.default.get('https://api.bilibili.com/x/web-interface/view', {
-            params: {
-                bvid: BVID
-            },
-            headers: {
-                Cookie: `SESSDATA=${SESSDATA || ''}`,
-                'User-Agent': userAgent
-            }
-        });
-        if (result.data.code === 0) {
-            let info = {
-                BV: result.data.data.bvid,
-                AV: `AV${result.data.data.aid}`,
-                Title: result.data.data.title,
-            };
-            for (const [index, item] of result.data.data.pages.entries()) {
-                info[`Part-${index + 1}`] = item.part;
-            }
-            console.log('Video data:');
-            console.table(info);
-            return result.data.data;
+    const result = await axios_1.default.get('https://api.bilibili.com/x/web-interface/view', {
+        params: {
+            bvid: BVID
+        },
+        headers: {
+            Cookie: `SESSDATA=${SESSDATA || ''}`,
+            'User-Agent': userAgent
         }
-        else {
-            throw `Error getting video data`;
+    });
+    if (result.data.code === 0) {
+        let info = {
+            BV: result.data.data.bvid,
+            AV: `AV${result.data.data.aid}`,
+            Title: result.data.data.title,
+            // desc: result.data.data.desc
+        };
+        for (const [index, item] of result.data.data.pages.entries()) {
+            info[`Part-${index + 1}`] = item.part;
         }
+        console.log('Video data:');
+        console.table(info);
+        return result.data.data;
     }
-    catch (err) {
-        throw new Error(err);
+    else {
+        throw new Error(`Error getting video data`);
     }
 }
 class BaseStream {
@@ -124,8 +116,8 @@ class DashStream {
     }
     get stream() {
         return {
-            video: this.dash.video.sort((a, b) => b.bandwidth - a.bandwidth)[0],
-            audio: this.dash.audio.sort((a, b) => b.bandwidth - a.bandwidth)[0]
+            video: this.dash.video.sort((a, b) => b.id - a.id)[0],
+            audio: this.dash.audio.sort((a, b) => b.id - a.id)[0]
         };
     }
 }
@@ -147,60 +139,51 @@ class FlvStream {
     }
 }
 async function getAcceptQuality(cid) {
-    try {
-        const result = await axios_1.default.get('https://api.bilibili.com/x/player/playurl', {
-            params: {
-                bvid: BVID,
-                cid,
-                fourk: 1
-            },
-            headers: {
-                Cookie: `SESSDATA=${SESSDATA || ''}`,
-                'User-Agent': userAgent
-            }
-        });
-        if (result.data.code === 0) {
-            return result.data.data.accept_quality.sort((a, b) => b - a);
+    const result = await axios_1.default.get('https://api.bilibili.com/x/player/playurl', {
+        params: {
+            bvid: BVID,
+            cid,
+            fourk: 1,
+            fnval: 80
+        },
+        headers: {
+            Cookie: `SESSDATA=${SESSDATA || ''}`,
+            'User-Agent': userAgent
         }
-        else {
-            throw `Failed to obtain video information`;
-        }
+    });
+    if (result.data.code === 0) {
+        return result.data.data.accept_quality.sort((a, b) => b - a);
     }
-    catch (err) {
-        throw new Error(err);
+    else {
+        throw new Error(`Failed to obtain video information`);
     }
 }
 async function getVideoUrl(cid, qualityId) {
-    try {
-        const result = await axios_1.default.get('https://api.bilibili.com/x/player/playurl', {
-            params: {
-                bvid: BVID,
-                cid,
-                fnval: 16,
-                qn: qualityId,
-                fourk: 1
-            },
-            headers: {
-                Cookie: `SESSDATA=${SESSDATA || ''}`,
-                'User-Agent': userAgent
-            }
-        });
-        if (result.data.code === 0) {
-            const _data = result.data.data;
-            const acceptFormat = _data.accept_format.split(',');
-            if ((acceptFormat.includes('mp4') || acceptFormat.includes('hdflv2')) || Object.keys(_data).includes('dash')) {
-                return new DashStream(_data.from, _data.result, _data.message, _data.quality, _data.format, _data.timelength, _data.accept_format, _data.accept_description, _data.accept_quality, _data.video_codecid, _data.seek_param, _data.seek_type, _data.dash);
-            }
-            else {
-                return new FlvStream(_data.from, _data.result, _data.message, _data.quality, _data.format, _data.timelength, _data.accept_format, _data.accept_description, _data.accept_quality, _data.video_codecid, _data.seek_param, _data.seek_type, _data.durl);
-            }
+    const result = await axios_1.default.get('https://api.bilibili.com/x/player/playurl', {
+        params: {
+            bvid: BVID,
+            cid,
+            fnval: 80,
+            qn: qualityId,
+            fourk: 1
+        },
+        headers: {
+            Cookie: `SESSDATA=${SESSDATA || ''}`,
+            'User-Agent': userAgent
+        }
+    });
+    if (result.data.code === 0) {
+        const _data = result.data.data;
+        const acceptFormat = _data.accept_format.split(',');
+        if ((acceptFormat.includes('mp4') || acceptFormat.includes('hdflv2')) || Object.keys(_data).includes('dash')) {
+            return new DashStream(_data.from, _data.result, _data.message, _data.quality, _data.format, _data.timelength, _data.accept_format, _data.accept_description, _data.accept_quality, _data.video_codecid, _data.seek_param, _data.seek_type, _data.dash);
         }
         else {
-            throw `Error getting video download link`;
+            return new FlvStream(_data.from, _data.result, _data.message, _data.quality, _data.format, _data.timelength, _data.accept_format, _data.accept_description, _data.accept_quality, _data.video_codecid, _data.seek_param, _data.seek_type, _data.durl);
         }
     }
-    catch (err) {
-        throw new Error(err);
+    else {
+        throw new Error(`Error getting video download link`);
     }
 }
 async function download(part, url, type) {
@@ -214,12 +197,12 @@ async function download(part, url, type) {
     let downloaded = 0;
     const contentType = type || String(response.headers['content-type']);
     const total = Number(response.headers['content-length']);
-    const filePath = path_1.join(__dirname, '/tmp', `${part.cid}-${total}`);
+    const filePath = (0, path_1.join)(__dirname, '/tmp', `${part.cid}-${total}`);
     const bar = new progress_1.default(`${contentType} [:bar] :percent :downloaded/:length`, {
         width: 30,
         total: total
     });
-    response.data.pipe(fs_1.createWriteStream(filePath));
+    response.data.pipe((0, fs_1.createWriteStream)(filePath));
     return new Promise((resolve, reject) => {
         response.data.on('data', (chunk) => {
             downloaded += chunk.length;
@@ -237,14 +220,14 @@ function convert(fileName, part, paths) {
         if (paths.length <= 0) {
             return;
         }
-        fs_1.mkdirSync(path_1.join(directory), { recursive: true });
-        const command = fluent_ffmpeg_1.default();
+        (0, fs_1.mkdirSync)((0, path_1.join)(directory), { recursive: true });
+        const command = (0, fluent_ffmpeg_1.default)();
         for (const item of paths) {
             command.mergeAdd(item);
         }
         command.videoCodec(`copy`);
         command.audioCodec(`copy`);
-        command.output(path_1.join(directory, `${fileName}_${BVID}_${part.part}.mkv`));
+        command.output((0, path_1.join)(directory, `${fileName}_${BVID}_${part.part}.mkv`));
         command.on('start', () => {
             console.log(`Convert start`);
         });
@@ -285,7 +268,7 @@ async function main() {
     if (!BVID) {
         return;
     }
-    fs_1.mkdirSync(path_1.join(__dirname, '/tmp'), { recursive: true });
+    (0, fs_1.mkdirSync)((0, path_1.join)(__dirname, '/tmp'), { recursive: true });
     await getCurrentUserData();
     videoData = await getVideoData();
     for (const item of videoData.pages) {
@@ -306,7 +289,7 @@ async function main() {
         }
         await convert(normalizeName(videoData.title), item, paths);
     }
-    rimraf_1.default.sync(path_1.join(__dirname, '/tmp'));
+    rimraf_1.default.sync((0, path_1.join)(__dirname, '/tmp'));
     console.log(`Task complete`);
 }
 main();
