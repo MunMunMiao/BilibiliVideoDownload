@@ -227,7 +227,7 @@ function convert(fileName, part, paths) {
         }
         command.videoCodec(`copy`);
         command.audioCodec(`copy`);
-        command.output((0, path_1.join)(directory, `${fileName}_${BVID}_${part.part}.mkv`));
+        command.output((0, path_1.join)(directory, `${fileName}_${BVID}_${normalizeName(part.part)}.mkv`));
         command.on('start', () => {
             console.log(`Convert start`);
         });
@@ -257,7 +257,7 @@ function transform(value) {
 }
 function normalizeName(str) {
     str = str.replace(/(\?|\*)/g, '');
-    str = str.replace(/(\/|\|)/g, ' ');
+    str = str.replace(/(\/|\|\/)/g, ' ');
     str = str.replace(/:/g, '-');
     str = str.replace(/"/g, '\`');
     str = str.replace(/</g, '(');

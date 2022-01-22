@@ -435,7 +435,7 @@ function convert(fileName: string, part: PartItem, paths: string[]): Promise<voi
 
         command.videoCodec(`copy`)
         command.audioCodec(`copy`)
-        command.output(join(directory, `${ fileName }_${ BVID }_${ part.part }.mkv`))
+        command.output(join(directory, `${ fileName }_${ BVID }_${ normalizeName(part.part) }.mkv`))
 
         command.on('start', () => {
             console.log(`Convert start`)
@@ -470,7 +470,7 @@ function transform(value?: number): string{
 
 function normalizeName(str: string): string{
     str = str.replace(/(\?|\*)/g, '')
-    str = str.replace(/(\/|\|)/g, ' ')
+    str = str.replace(/(\/|\|\/)/g, ' ')
     str = str.replace(/:/g, '-')
     str = str.replace(/"/g, '\`')
     str = str.replace(/</g, '(')
