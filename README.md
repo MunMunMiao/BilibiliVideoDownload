@@ -34,5 +34,6 @@ Options:
   -b, --bv <string>         BV id
   -c, --cookie <string>     SESSDATA
   -d, --directory <string>  Output directory (default: "./output")
+  -a, --audio <1 or 0>      download audio only
   -h, --help                output usage information
 ```
