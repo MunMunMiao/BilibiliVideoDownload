@@ -13,12 +13,14 @@ const rimraf_1 = __importDefault(require("rimraf"));
 commander_1.program.requiredOption('-b, --bv <string>', 'BV id');
 commander_1.program.requiredOption('-c, --cookie <number>', 'SESSDATA');
 commander_1.program.requiredOption('-d, --directory <string>', 'Output directory', './output');
+commander_1.program.requiredOption('-a, --audio <number>', 'if value is 1 download audio only');
 commander_1.program.parse(process.argv);
 const userAgent = `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36`;
 let directory = './output';
 let BVID;
 let SESSDATA;
 let videoData;
+let audio_flag;
 const values = commander_1.program.opts();
 if (values.bv) {
     BVID = values.bv;
@@ -28,6 +30,9 @@ if (values.cookie) {
 }
 if (values.directory) {
     directory = (0, path_1.join)(values.directory);
+}
+if (values.audio) {
+    audio_flag = values.audio;
 }
 console.log('Input config:');
 console.table({
@@ -278,10 +283,18 @@ async function main() {
         console.log(`Part: ${item.page}`);
         console.log(`Name: ${item.part}`);
         if (stream instanceof DashStream) {
-            const videoPath = await download(item, stream.stream.video.baseUrl, stream.dash.video[0].mimeType);
-            const audioPath = await download(item, stream.stream.audio.baseUrl, stream.dash.audio[0].mimeType);
-            paths.push(videoPath);
-            paths.push(audioPath);
+		if ( audio_flag == 1 ){
+			const audioPath = await download(item, stream.stream.audio.baseUrl, stream.dash.audio[0].mimeType);
+			paths.push(audioPath);
+			console.log(`Task complete`);
+		}
+		else {
+			const videoPath = await download(item, stream.stream.video.baseUrl, stream.dash.video[0].mimeType);
+			const audioPath = await download(item, stream.stream.audio.baseUrl, stream.dash.audio[0].mimeType);
+			paths.push(videoPath);
+			paths.push(audioPath);
+		}
+
         }
         if (stream instanceof FlvStream) {
             const filePath = await download(item, stream.durl[0].url);
