@@ -144,7 +144,7 @@ async function getAcceptQuality(cid) {
             bvid: BVID,
             cid,
             fourk: 1,
-            fnval: 80
+            fnval: 4048
         },
         headers: {
             Cookie: `SESSDATA=${SESSDATA || ''}`,
@@ -163,7 +163,7 @@ async function getVideoUrl(cid, qualityId) {
         params: {
             bvid: BVID,
             cid,
-            fnval: 80,
+            fnval: 4048,
             qn: qualityId,
             fourk: 1
         },

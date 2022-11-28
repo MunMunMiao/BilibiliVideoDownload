@@ -318,7 +318,7 @@ async function getAcceptQuality(cid: number): Promise<number[]>{
             bvid: BVID,
             cid,
             fourk: 1,
-            fnval: 80
+            fnval: 4048
         },
         headers: {
             Cookie: `SESSDATA=${ SESSDATA || '' }`,
@@ -338,7 +338,7 @@ async function getVideoUrl(cid: number, qualityId: number): Promise<DashStream |
         params: {
             bvid: BVID,
             cid,
-            fnval: 80,
+            fnval: 4048,
             qn: qualityId,
             fourk: 1
         },
