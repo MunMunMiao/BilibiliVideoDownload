@@ -9,11 +9,10 @@
     "test:ui": "vitest --ui",
     "build": "esbuild src/index.ts --define:process.env.FLUENTFFMPEG_COV=0 --bundle --minify --platform=node --outfile=dist/index.js && tsc --emitDeclarationOnly --outFile dist/index.ts"
   },
-  "bin": {
-    "bilibili-cli": "./dist/index.js"
-  },
+  "bin": "./dist/index.js",
   "main": "./dist/index.js",
   "typings": "./dist/index.d.ts",
+  "files": [],
   "exports": {
     "./package.json": {
       "default": "./package.json"
