@@ -1,34 +1,65 @@
 {
-  "name": "bilibilivideodownload",
-  "version": "1.0.0",
+  "name": "bilibili-cli",
+  "version": "0.0.1",
   "description": "",
-  "main": "bilibili.js",
+
   "scripts": {
     "dev": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest run",
+    "test:watch": "vitest watch",
+    "test:ui": "vitest --ui",
+    "build": "esbuild src/index.ts --define:process.env.FLUENTFFMPEG_COV=0 --bundle --minify --platform=node --outfile=dist/index.js && tsc --emitDeclarationOnly --outFile dist/index.ts"
+  },
+  "bin": {
+    "bilibili-cli": "./dist/index.js"
+  },
+  "main": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "exports": {
+    "./package.json": {
+      "default": "./package.json"
+    },
+    "./dist": {
+      "types": "./index.d.ts",
+      "node": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "engineStrict": true,
+  "engines": {
+    "node": ">=18.0.0"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/MunMunMiao/BilibiliVideoDownload.git"
   },
-  "author": "",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/MunMunMiao/BilibiliVideoDownload/issues"
   },
   "homepage": "https://github.com/MunMunMiao/BilibiliVideoDownload#readme",
   "dependencies": {
-    "axios": "^0.24.0",
-    "commander": "^8.3.0",
+    "class-transformer": "^0.5.1",
+    "cli-progress": "^3.11.2",
+    "cli-select": "^1.1.2",
+    "cli-table3": "^0.6.3",
+    "commander": "^9.4.1",
     "fluent-ffmpeg": "^2.1.2",
-    "progress": "^2.0.3",
-    "rimraf": "^3.0.2"
+    "multi-progress-bars": "^4.3.1",
+    "prompts": "^2.4.2",
+    "reflect-metadata": "^0.1.13",
+    "rimraf": "^3.0.2",
+    "rxjs": "^7.8.0"
   },
   "devDependencies": {
+    "@types/cli-progress": "^3.11.0",
     "@types/fluent-ffmpeg": "^2.1.18",
-    "@types/node": "^16.11.6",
-    "@types/progress": "^2.0.5",
+    "@types/node": "^18.11.17",
+    "@types/prompts": "^2.4.2",
     "@types/rimraf": "^3.0.2",
-    "typescript": "^4.4.4"
+    "@vitest/ui": "^0.25.8",
+    "esbuild": "0.16.8",
+    "typescript": "^4.4.4",
+    "vitest": "^0.25.8"
   }
 }

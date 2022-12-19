@@ -1,26 +1,26 @@
 {
-    "compileOnSave": true,
-    "compilerOptions": {
-        "target": "es2020",
-        "module": "commonjs",
-        "watch": true,
-        "sourceMap": true,
-        "rootDir": "./",
-        "strict": true,
-        "moduleResolution": "node",
-        "typeRoots": [
-            "node_modules/@types"
-        ],
-        "allowSyntheticDefaultImports": true,
-        "esModuleInterop": true,
-        "sourceRoot": "./",
-        "forceConsistentCasingInFileNames": true,
-        "skipLibCheck": true
-    },
-    "files": [
-        "bilibili.ts"
-    ],
-    "exclude": [
-        "node_modules"
-    ]
+  "compileOnSave": false,
+  "compilerOptions": {
+    "allowJs": true,
+    "experimentalDecorators": true,
+    "target": "ESNext",
+    "sourceMap": true,
+    "baseUrl": "./",
+    "rootDir": "./",
+    "strict": true,
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "emitDecoratorMetadata": true,
+    "declaration": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true
+  },
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "src/**/*.spec.ts"
+  ]
 }

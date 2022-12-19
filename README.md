@@ -2,37 +2,22 @@
 
 > This library relies on [ffmpeg](https://www.ffmpeg.org/download.html), please install and set path
 
-- [How to use](#How-to-use)
-	- [Download](#Download)
-	- [Install dependencies](#Install-dependencies)
-	- [Quick start](#Quick-start)
-- [Options](#Options)
-- [Working at next](#Working-at-next)
-
 ## How to use
-
-#### Download
-```text
-git clone https://github.com/MunMunMiao/BilibiliVideoDownload.git
-```
-
-#### Install dependencies
-```text
-npm install
-```
 
 #### Quick start
 ```text
-node bilibili.js -c XXXXX -b BV1k4411e7Va
+npx bilibili-cli -b BV1k4411e7Va
 ```
 
 ## Options
 ```text
-Usage: bilibili [options]
+Usage: bilibili-video [options]
 
 Options:
-  -b, --bv <string>         BV id
-  -c, --cookie <string>     SESSDATA
-  -d, --directory <string>  Output directory (default: "./output")
-  -h, --help                output usage information
+  -b, --bvid <String>        Video BVID
+  -t, --token <String>       Value from cookie [SESSDATA] (default: "")
+  -d, --dir <String>         Output dir (default: "./")
+  -u, --user-agent <String>  User-Agent (default: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36")
+  -h, --help                 display help for command
+
 ```
