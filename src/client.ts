@@ -222,6 +222,7 @@ export interface Option {
   cookie?: string
   dir: string
   bvid: string
+  selectStream?: boolean
 }
 
 export class Client {
@@ -229,6 +230,7 @@ export class Client {
   userAgent?: string
   cookie?: string
   dir: string
+  selectStream?: boolean
   private bar = new MultiBar({
     // clearOnComplete: true,
     stopOnComplete: true,
@@ -240,6 +242,7 @@ export class Client {
     this.userAgent = option?.userAgent
     this.token = option?.token
     this.cookie = option?.cookie
+    this.selectStream = option?.selectStream
   }
 
   private request(url: string, option?: { id: string }): Observable<Response> {
@@ -418,9 +421,10 @@ export class Client {
       }
     }
 
-    const result = new StreamSpecification()
-    result.video = video[0]
-    if (video.length === 1 && (audio.length === 1)) {
+    if (!this.selectStream) {
+      const result = new StreamSpecification()
+      result.video = video[0]
+      result.audio = audio[0]
       return of<StreamSpecification>(result)
     }
 
@@ -452,6 +456,7 @@ export class Client {
         if (!(v.video instanceof VideoSpecification) || !(v.audio instanceof VideoSpecification)){
           process.exit(0)
         }
+        const result = new StreamSpecification()
         result.video = v.video
         result.audio = v.audio
         return result
@@ -579,7 +584,8 @@ export class Client {
             )
           }),
           mergeAll(parts.length),
-          concatMap(option => this.convert(option))
+          concatMap(option => this.convert(option)),
+          toArray()
         )
       })
     )
