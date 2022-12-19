@@ -15,9 +15,6 @@ const option = cmd.opts<Option>()
 const client = new Client(option)
 
 client.run(option.bvid).subscribe({
-  next: result => {
-    console.log(result)
-  },
   error: err => {
     console.error(err)
   }
