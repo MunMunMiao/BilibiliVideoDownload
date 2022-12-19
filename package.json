@@ -2,7 +2,6 @@
   "name": "bilibili-cli",
   "version": "0.0.1",
   "description": "",
-
   "scripts": {
     "dev": "tsc",
     "test": "vitest run",
@@ -41,11 +40,8 @@
   "dependencies": {
     "class-transformer": "^0.5.1",
     "cli-progress": "^3.11.2",
-    "cli-select": "^1.1.2",
-    "cli-table3": "^0.6.3",
     "commander": "^9.4.1",
     "fluent-ffmpeg": "^2.1.2",
-    "multi-progress-bars": "^4.3.1",
     "prompts": "^2.4.2",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",

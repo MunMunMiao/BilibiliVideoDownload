@@ -8,7 +8,7 @@ import {
   Observable,
   of,
   tap,
-  toArray
+  toArray,
 } from 'rxjs'
 import { switchMap, map, concatMap } from 'rxjs/operators'
 import { fromFetch } from 'rxjs/fetch'
@@ -19,7 +19,6 @@ import { join } from 'path'
 import ffmpeg from 'fluent-ffmpeg'
 import { sync } from 'rimraf'
 import prompts from 'prompts'
-import { fromPromise } from 'rxjs/internal/observable/innerFrom'
 import process from 'node:process'
 
 export class User {
@@ -218,8 +217,6 @@ export interface ConvertOption {
 }
 
 export interface Option {
-  /** Auto clean download directory */
-  clean?: boolean
   token?: string
   userAgent?: string
   cookie?: string
@@ -427,7 +424,7 @@ export class Client {
       return of<StreamSpecification>(result)
     }
 
-    return fromPromise(prompts([
+    return from(prompts([
       {
         type: 'select',
         name: 'video',
@@ -485,8 +482,6 @@ export class Client {
       for (const item of option.files) {
         command.mergeAdd(item)
       }
-      debugger
-
       command.videoCodec(`copy`)
       command.audioCodec(`copy`)
       command.output(outputPath)
@@ -498,7 +493,7 @@ export class Client {
       })
       command.on('end', () => {
         for (const item of option.files) {
-          // sync(item)
+          sync(item)
         }
         bar.increment()
         subscriber.next(outputPath)
