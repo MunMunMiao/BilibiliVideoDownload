@@ -1,5 +1,14 @@
 # BilibiliVideoDownload
 
+<p>
+  <a href="https://www.npmjs.com/package/bilibili-cli">
+    <img src="https://img.shields.io/npm/dw/bilibili-cli?style=plastic" alt="NPM download" />
+  </a>&nbsp;
+  <a href="https://github.com/MunMunMiao/BilibiliVideoDownload/actions/workflows/main.yml">
+    <img src="https://github.com/MunMunMiao/BilibiliVideoDownload/actions/workflows/main.yml/badge.svg" alt="Publish" />
+  </a>&nbsp;
+</p>
+
 > This library relies on [ffmpeg](https://www.ffmpeg.org/download.html), please install and set path
 
 ## Quick start
