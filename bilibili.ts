@@ -9,6 +9,7 @@ import rimraf from 'rimraf'
 program.requiredOption('-b, --bv <string>', 'BV id')
 program.requiredOption('-c, --cookie <number>', 'SESSDATA')
 program.requiredOption('-d, --directory <string>', 'Output directory', './output')
+program.requiredOption('-a, --audio', 'download audio only',"false");
 
 program.parse(process.argv)
 
@@ -17,6 +18,7 @@ let directory: string = './output'
 let BVID: string | undefined
 let SESSDATA: string | undefined
 let videoData: VideoData | undefined
+let audio_flag: boolean = false
 
 const values = program.opts<{
     bv?: string
@@ -33,7 +35,9 @@ if (values.cookie){
 if (values.directory){
     directory = join(values.directory)
 }
-
+if (values.directory){
+    audio_flag = true
+}
 console.log('Input config:')
 console.table({
     BV: BVID,
@@ -496,10 +500,17 @@ async function main(): Promise<void>{
         console.log(`Part: ${ item.page }`)
         console.log(`Name: ${ item.part }`)
         if (stream instanceof DashStream){
-            const videoPath = await download(item, stream.stream.video.baseUrl, stream.dash.video[0].mimeType)
-            const audioPath = await download(item, stream.stream.audio.baseUrl, stream.dash.audio[0].mimeType)
-            paths.push(videoPath)
-            paths.push(audioPath)
+            if (audio_flag){
+                const videoPath = await download(item, stream.stream.video.baseUrl, stream.dash.video[0].mimeType)
+                paths.push(videoPath)
+            }
+            else{
+                const videoPath = await download(item, stream.stream.video.baseUrl, stream.dash.video[0].mimeType)
+                const audioPath = await download(item, stream.stream.audio.baseUrl, stream.dash.audio[0].mimeType)
+                paths.push(videoPath)
+                paths.push(audioPath)
+            }
+
         }
 
         if (stream instanceof FlvStream){
