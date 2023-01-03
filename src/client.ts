@@ -1,5 +1,5 @@
 import 'reflect-metadata'
-import { plainToInstance } from 'class-transformer'
+import { plainToInstance, Type, Expose } from 'class-transformer'
 import {
   combineLatestWith,
   delay,
@@ -12,7 +12,6 @@ import {
 } from 'rxjs'
 import { switchMap, map, concatMap } from 'rxjs/operators'
 import { fromFetch } from 'rxjs/fetch'
-import { Type, Expose } from 'class-transformer'
 import { createWriteStream } from 'fs'
 import { MultiBar, Presets } from 'cli-progress'
 import { join } from 'path'

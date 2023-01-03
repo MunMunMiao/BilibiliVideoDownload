@@ -9,6 +9,7 @@ cmd.option('-t, --token <String>', 'Value from cookie [SESSDATA]', '')
 cmd.option('-d, --dir <String>', 'Output dir', './')
 cmd.option('-u, --user-agent <String>', 'User-Agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36')
 cmd.option('-ss, --select-stream', 'Select stream', false)
+cmd.version('0.0.4')
 cmd.parseAsync(process.argv)
 
 const option = cmd.opts<Option>()

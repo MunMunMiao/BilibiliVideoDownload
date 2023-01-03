@@ -1,6 +1,6 @@
 {
   "name": "bilibili-cli",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "",
   "scripts": {
     "dev": "tsc",
@@ -49,7 +49,7 @@
   "devDependencies": {
     "@types/cli-progress": "^3.11.0",
     "@types/fluent-ffmpeg": "^2.1.18",
-    "@types/node": "^18.11.17",
+    "@types/node": "^18.11.18",
     "@types/prompts": "^2.4.2",
     "@types/rimraf": "^3.0.2",
     "@vitest/ui": "^0.25.8",

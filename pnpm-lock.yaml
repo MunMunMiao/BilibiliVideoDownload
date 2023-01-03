@@ -3,7 +3,7 @@ lockfileVersion: 5.4
 specifiers:
   '@types/cli-progress': ^3.11.0
   '@types/fluent-ffmpeg': ^2.1.18
-  '@types/node': ^18.11.17
+  '@types/node': ^18.11.18
   '@types/prompts': ^2.4.2
   '@types/rimraf': ^3.0.2
   '@vitest/ui': ^0.25.8
@@ -32,7 +32,7 @@ dependencies:
 devDependencies:
   '@types/cli-progress': 3.11.0
   '@types/fluent-ffmpeg': 2.1.20
-  '@types/node': 18.11.17
+  '@types/node': 18.11.18
   '@types/prompts': 2.4.2
   '@types/rimraf': 3.0.2
   '@vitest/ui': 0.25.8
@@ -257,34 +257,34 @@ packages:
   /@types/cli-progress/3.11.0:
     resolution: {integrity: sha512-XhXhBv1R/q2ahF3BM7qT5HLzJNlIL0wbcGyZVjqOTqAybAnsLisd7gy1UCyIqpL+5Iv6XhlSyzjLCnI2sIdbCg==}
     dependencies:
-      '@types/node': 18.11.17
+      '@types/node': 18.11.18
     dev: true
 
   /@types/fluent-ffmpeg/2.1.20:
     resolution: {integrity: sha512-B+OvhCdJ3LgEq2PhvWNOiB/EfwnXLElfMCgc4Z1K5zXgSfo9I6uGKwR/lqmNPFQuebNnes7re3gqkV77SyypLg==}
     dependencies:
-      '@types/node': 18.11.17
+      '@types/node': 18.11.18
     dev: true
 
   /@types/glob/8.0.0:
     resolution: {integrity: sha512-l6NQsDDyQUVeoTynNpC9uRvCUint/gSUXQA2euwmTuWGvPY5LSDUu6tkCtJB2SvGQlJQzLaKqcGZP4//7EDveA==}
     dependencies:
       '@types/minimatch': 5.1.2
-      '@types/node': 18.11.17
+      '@types/node': 18.11.18
     dev: true
 
   /@types/minimatch/5.1.2:
     resolution: {integrity: sha512-K0VQKziLUWkVKiRVrx4a40iPaxTUefQmjtkQofBkYRcoaaL/8rhwDWww9qWbrgicNOgnpIsMxyNIUM4+n6dUIA==}
     dev: true
 
-  /@types/node/18.11.17:
-    resolution: {integrity: sha512-HJSUJmni4BeDHhfzn6nF0sVmd1SMezP7/4F0Lq+aXzmp2xm9O7WXrUtHW/CHlYVtZUbByEvWidHqRtcJXGF2Ng==}
+  /@types/node/18.11.18:
+    resolution: {integrity: sha512-DHQpWGjyQKSHj3ebjFI/wRKcqQcdR+MoFBygntYOZytCqNfkd2ZC4ARDJ2DQqhjH5p85Nnd3jhUJIXrszFX/JA==}
     dev: true
 
   /@types/prompts/2.4.2:
     resolution: {integrity: sha512-TwNx7qsjvRIUv/BCx583tqF5IINEVjCNqg9ofKHRlSoUHE62WBHrem4B1HGXcIrG511v29d1kJ9a/t2Esz7MIg==}
     dependencies:
-      '@types/node': 18.11.17
+      '@types/node': 18.11.18
       kleur: 3.0.3
     dev: true
 
@@ -292,7 +292,7 @@ packages:
     resolution: {integrity: sha512-F3OznnSLAUxFrCEu/L5PY8+ny8DtcFRjx7fZZ9bycvXRi3KPTRS9HOitGZwvPg0juRhXFWIeKX58cnX5YqLohQ==}
     dependencies:
       '@types/glob': 8.0.0
-      '@types/node': 18.11.17
+      '@types/node': 18.11.18
     dev: true
 
   /@vitest/ui/0.25.8:
@@ -692,7 +692,7 @@ packages:
     hasBin: true
     dev: true
 
-  /vite/4.0.1_@types+node@18.11.17:
+  /vite/4.0.1_@types+node@18.11.18:
     resolution: {integrity: sha512-kZQPzbDau35iWOhy3CpkrRC7It+HIHtulAzBhMqzGHKRf/4+vmh8rPDDdv98SWQrFWo6//3ozwsRmwQIPZsK9g==}
     engines: {node: ^14.18.0 || >=16.0.0}
     hasBin: true
@@ -717,7 +717,7 @@ packages:
       terser:
         optional: true
     dependencies:
-      '@types/node': 18.11.17
+      '@types/node': 18.11.18
       esbuild: 0.16.8
       postcss: 8.4.20
       resolve: 1.22.1
@@ -750,7 +750,7 @@ packages:
     dependencies:
       '@types/chai': 4.3.4
       '@types/chai-subset': 1.3.3
-      '@types/node': 18.11.17
+      '@types/node': 18.11.18
       '@vitest/ui': 0.25.8
       acorn: 8.8.1
       acorn-walk: 8.2.0
@@ -762,7 +762,7 @@ packages:
       tinybench: 2.3.1
       tinypool: 0.3.0
       tinyspy: 1.0.2
-      vite: 4.0.1_@types+node@18.11.17
+      vite: 4.0.1_@types+node@18.11.18
     transitivePeerDependencies:
       - less
       - sass
