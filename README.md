@@ -1,13 +1,7 @@
 # BilibiliVideoDownload
 
-<p>
-  <a href="https://www.npmjs.com/package/bilibili-cli">
-    <img src="https://img.shields.io/npm/dw/bilibili-cli?style=plastic" alt="NPM download" />
-  </a>&nbsp;
-  <a href="https://github.com/MunMunMiao/BilibiliVideoDownload/actions/workflows/main.yml">
-    <img src="https://github.com/MunMunMiao/BilibiliVideoDownload/actions/workflows/main.yml/badge.svg" alt="Publish" />
-  </a>&nbsp;
-</p>
+[![npm version](https://badge.fury.io/js/bilibili-cli.svg)](https://badge.fury.io/js/bilibili-cli)
+[![Publish](https://github.com/MunMunMiao/BilibiliVideoDownload/actions/workflows/main.yml/badge.svg)](https://badge.fury.io/js/bilibili-cli)
 
 > This library relies on [ffmpeg](https://www.ffmpeg.org/download.html), please install and set path
 
@@ -26,6 +20,7 @@ Options:
   -d, --dir <String>         Output dir (default: "./")
   -u, --user-agent <String>  User-Agent (default: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36")
   -ss, --select-stream       Select stream (default: false)
+  -V, --version              output the version number
   -h, --help                 display help for command
 ```
 
