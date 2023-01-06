@@ -1,7 +1,7 @@
 # BilibiliVideoDownload
 
-[![npm version](https://badge.fury.io/js/bilibili-cli.svg)](https://badge.fury.io/js/bilibili-cli)
-[![Publish](https://github.com/MunMunMiao/BilibiliVideoDownload/actions/workflows/main.yml/badge.svg)](https://badge.fury.io/js/bilibili-cli)
+[![npm version](https://badge.fury.io/js/bilibili-cli.svg)](https://www.npmjs.com/package/bilibili-cli)
+[![Publish](https://github.com/MunMunMiao/BilibiliVideoDownload/actions/workflows/main.yml/badge.svg)](https://github.com/MunMunMiao/BilibiliVideoDownload)
 
 > This library relies on [ffmpeg](https://www.ffmpeg.org/download.html), please install and set path
 
