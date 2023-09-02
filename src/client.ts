@@ -19,6 +19,7 @@ import ffmpeg from 'fluent-ffmpeg'
 import { sync } from 'rimraf'
 import prompts from 'prompts'
 import process from 'node:process'
+import os from 'node:os'
 
 export class User {
   @Expose() isLogin = Boolean()
@@ -323,7 +324,7 @@ export class Client {
   }
 
   getVideoStream(id: string, cid: number, qualityId?: number): Observable<Stream> {
-    const url = new URL('https://api.bilibili.com/x/player/playurl')
+    const url = new URL('https://api.bilibili.com/x/player/wbi/playurl')
     url.searchParams.append('bvid', id)
     url.searchParams.append('cid', cid.toString())
     url.searchParams.append('fourk', '1')
@@ -593,7 +594,11 @@ export class Client {
   run(id: string) {
     return this.getCurrentUserInfo().pipe(
       switchMap(info => {
-        console.table(info)
+        console.table({
+          'os': `${os.version()}`,
+          'node': process.version,
+          ...info,
+        })
         return this.getVideoInfo(id)
       }),
       switchMap(info => {
