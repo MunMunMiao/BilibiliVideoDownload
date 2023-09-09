@@ -266,7 +266,7 @@ export class Client {
   }
 
   getCurrentUserInfo(): Observable<User> {
-    return this.request('https://api.bilibili.com/nav').pipe(
+    return this.request('https://api.bilibili.com/x/web-interface/nav').pipe(
       switchMap(response => {
         if (response.ok) {
           return response.json()
